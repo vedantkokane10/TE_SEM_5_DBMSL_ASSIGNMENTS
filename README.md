@@ -1,0 +1,2 @@
+# TE_SEM_5_DBMSL_ASSIGNMENTS
+DBMS assignments
