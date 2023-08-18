@@ -1,0 +1,100 @@
+1. Creating Borrower and Fine table
+create table Borrower(
+rollNo int,
+dateOfIssue date,
+nameOfStudent varchar(20),
+titleOfBook varchar(50),
+status varchar(1),
+ primary key(rollNo));
+
+create table Fine( rollNo int ,
+ returnDate date,
+ fineAmount int, 
+foreign key (rollNo) references Borrower(rollNo) on delete cascade);
+
+2. Wrting procedure for calculating fine
+DELIMITER //
+CREATE PROCEDURE calculateFine(roll INT, title VARCHAR(50))
+BEGIN
+  DECLARE noOfdays INT;
+  DECLARE dateIssue DATE;
+  DECLARE fineAmount INT;
+  DECLARE futureIssueDate CONDITION FOR SQLSTATE '45000';
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  SET noOfdays = NULL;
+  SELECT dateOfIssue INTO dateIssue FROM Borrower WHERE rollNo = roll AND titleOfBook = title;
+  SET fineAmount = 0;
+  SET noOfdays = DATEDIFF(CURDATE(), dateIssue);
+ 
+  IF noOfdays IS NULL OR noOfdays < 0 THEN
+    IF noOfdays < 0 then
+     SELECT 'A book cannot be returned which has a future issue date.';
+    END IF;
+  ELSE
+    IF noOfdays >= 15 AND noOfdays <= 30 THEN
+      SET fineAmount = noOfdays * 5;
+    ELSEIF noOfdays > 30 THEN
+      SET fineAmount = noOfdays * 50;
+    END IF;
+ 
+    UPDATE Borrower SET status = 'R' WHERE rollNo = roll AND titleOfBook = title;
+    INSERT INTO Fine VALUES (roll, CURDATE(), fineAmount);
+    COMMIT;
+  END IF;
+ 
+  IF noOfdays IS NULL THEN
+    SELECT 'Borrower or Book not found.';
+  END IF;
+ 
+END;
+//
+DELIMITER ;
+
+3. Adding Data in Borrower table
+insert into Borrower values(30,"2023-08-12","Vedant","CNS","I");
+insert into Borrower values(01,"2023-08-20","Ajit","DBMS","I");  
+insert into Borrower values(10,"2023-08-01","Yash","SPOS","I");
+insert into Borrower values(17,"2023-08-30","Raj","TOC","I");
+
+4. Adding data in Fine table
+
+call calculateFine(30,"CNS");
+
+call calculateFine(01,"DBMS");
++----------------------------------------------------------+
+| A book cannot be returned which has a future issue date. |
++----------------------------------------------------------+
+| A book cannot be returned which has a future issue date. |
++----------------------------------------------------------+
+
+call calculateFine(10,"SPOS");
+
+call calculateFine(17,"TOC");
++----------------------------------------------------------+
+| A book cannot be returned which has a future issue date. |
++----------------------------------------------------------+
+| A book cannot be returned which has a future issue date. |
++----------------------------------------------------------+
+
+5. Displaying the tables
+select * from Borrower;
++--------+-------------+---------------+-------------+--------+
+| rollNo | dateOfIssue | nameOfStudent | titleOfBook | status |
++--------+-------------+---------------+-------------+--------+
+|      1 | 2023-08-20  | Ajit          | DBMS        | I      |
+|     10 | 2023-08-01  | Yash          | SPOS        | R      |
+|     17 | 2023-08-30  | Raj           | TOC         | I      |
+|     30 | 2023-08-12  | Vedant        | CNS         | R      |
++--------+-------------+---------------+-------------+--------+
+
+select * from Fine;
++--------+------------+------------+
+| rollNo | returnDate | fineAmount |
++--------+------------+------------+
+|     30 | 2023-08-18 |          0 |
+|     10 | 2023-08-18 |         85 |
++--------+------------+------------+
+
+
+
+
