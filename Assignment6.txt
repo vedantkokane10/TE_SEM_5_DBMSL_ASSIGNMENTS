@@ -29,22 +29,26 @@ select * from NewEmployee;
 
 4. Creating procedure in which I will use cursor
 DELIMITER //
-CREATE PROCEDURE MergeTable()
+CREATE PROCEDURE MergeTable2()
 BEGIN
-    DECLARE oldid INT;
-    DECLARE oldname VARCHAR(20);
-    DECLARE done BOOLEAN DEFAULT FALSE;
-    DECLARE c1 CURSOR FOR SELECT id, name FROM oldEmployee;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-    OPEN c1;
-    FETCH c1 INTO oldid, oldname;
-    WHILE NOT done DO
-        IF NOT EXISTS (SELECT * FROM newEmployee WHERE id = oldid) THEN
-            INSERT INTO newEmployee (id, name) VALUES (oldid, oldname);
-        END IF;
-        FETCH c1 INTO oldid, oldname;
-    END WHILE;
-    CLOSE c1;
+    DECLARE oldid INT;
+    DECLARE oldname VARCHAR(20);
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    DECLARE c1 CURSOR FOR SELECT id, name FROM OldEmployee;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN c1;
+    FETCH c1 INTO oldid, oldname;
+    
+    WHILE NOT done DO
+        IF NOT EXISTS (SELECT * FROM NewEmployee WHERE id = oldid) THEN
+            INSERT INTO NewEmployee (id, name) VALUES (oldid, oldname);
+        END IF;
+        
+        FETCH c1 INTO oldid, oldname;
+    END WHILE;
+    
+    CLOSE c1;
 END;
 //
 DELIMITER ;
