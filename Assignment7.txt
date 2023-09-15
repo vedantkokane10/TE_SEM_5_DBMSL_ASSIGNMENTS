@@ -1,0 +1,26 @@
+// Use of Borrower table that is defined in Assignment 4
+
+1. Creating a new table for Audting the Library
+create table LibraryAudit(
+ rollNo int,
+ titleOfBook varchar(50),
+ dateOfIssue date,
+ dateOfReturn date);
+
+2. Creating  Trigger for Updating LibraryAudit table once the Borrower table is updated
+create trigger updateBorrower  
+after update  on Borrower 
+for each row 
+ begin
+ declare roll int; 
+declare title varchar(50); 
+declare issueDate date;
+declare returnDate date;
+ set roll = old.rollNo;
+set title = old.titleOfBook;
+set issueDate = old.dateOfIssue;
+set returnDate =  CURDATE();
+if  new.status = 'R' and old.status = 'I' then
+insert into LibraryAudit values(roll,title,issueDate,returnDate); 
+end if;
+end//
