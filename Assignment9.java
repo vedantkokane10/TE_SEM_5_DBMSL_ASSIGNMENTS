@@ -1,3 +1,4 @@
+// 31430 - Vedant Kokane
 package Program;
 import java.util.*;
 import java.sql.*;
@@ -8,16 +9,11 @@ public class Program {
 		Connection connection = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://10.10.15.233/31430db","31430","31430");
+			connection = DriverManager.getConnection("jdbc:mysql://10.10.15.233/DatabaseName","UserName","Password");
 			Statement statement = connection.createStatement();
 			//String print = "select * from Employee;";
 			ResultSet result;
 			Scanner in = new Scanner(System.in);
-			//result = statement.executeQuery(print);
-//			while(result.next()) {
-//				System.out.println(result.getString("Name"));
-//			}
-			//  System.out.println();
 			String ch = "y";
 			while(ch != "n") {
 				System.out.println("----------------------------------------------------------");
