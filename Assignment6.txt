@@ -42,7 +42,7 @@ BEGIN
     
     WHILE NOT done DO
         IF NOT EXISTS (SELECT * FROM NewEmployee WHERE id = oldid) THEN
-            INSERT INTO NewEmployee (id, name) VALUES (oldid, oldname);
+            INSERT INTO NewEmployee VALUES (oldid, oldname);
         END IF;
         
         FETCH c1 INTO oldid, oldname;
