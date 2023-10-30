@@ -1,14 +1,4 @@
 
-None selected 
-
-Skip to content
-Using Gmail with screen readers
-pbl 
-Conversations
-4.32 GB of 15 GB used
-Terms · Privacy · Program Policies
-Last account activity: 0 minutes ago
-Open in 1 other location · Details
 1. create collection movieReview
 
 2. db.movieReview.insertOne({
