@@ -138,7 +138,7 @@ db.movieReview.find({},{_id:0})
 
 9. Array Operations 
 1. $push (add)
-db.movieReview.update( { name: "Pathan" }, { $push: { reviews: { userId: 105, comment: "Good movie!", rating: 7 } } } 
+db.movieReview.update( { name: "Pathan" }, { $push: { reviews: { userId: 105, comment: "Good movie!", rating: 7 } } } )
 db.movieReview.update( { name: "Titanic" }, { $push: { reviews: { userId: 109, comment: "Good movie!", rating: 8 } } } )
 
 2. $pull (remove)
