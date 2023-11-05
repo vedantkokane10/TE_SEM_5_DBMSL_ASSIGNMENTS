@@ -54,7 +54,7 @@ END;
 DELIMITER ;
 
 5. Calling the Merge table procedure
-call MergeTable();
+call MergeTable2();
 
 6. Printing of data
 select * from OldEmployee;
