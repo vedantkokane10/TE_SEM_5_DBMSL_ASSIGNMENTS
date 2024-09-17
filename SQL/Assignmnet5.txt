@@ -1,0 +1,77 @@
+1. Creating a Function that returns the category of Student
+
+DELIMITER //
+create function getCategory(marks int) 
+returns varchar(50) 
+begin
+declare
+category varchar(50); 
+if marks >= 990 and marks <= 1500 then
+set category = "Distinction"; 
+elseif marks >= 900 and marks <= 989 then
+set category = "First Class"; 
+elseif marks >= 825 and marks <= 899 then 
+set category = "Second Class"; 
+else set category = "Fail";
+end if; 
+return category; 
+end;
+//
+DELIMITER;
+
+
+2. Create Tables 
+
+create table StudentMarks(
+name varchar(50), 
+totalMarks int, 
+primary key(name));
+
+create table Result( 
+rollNo int,
+name varchar(50),
+class varchar(20),
+foreign key (name) references StudentMarks(name) on delete cascade);
+
+
+3. Creating a Procedure to add data
+DELIMITER //
+create procedure adddata(in name varchar(50),in roll int,in marks int)
+begin insert into StudentMarks values(name,marks); 
+insert into Result values(roll,name,getCategory(marks)); 
+end;
+//
+DELIMITER;
+
+4. Inserting Data 
+call adddata("Vedant",30,1340)
+call adddata("Raj",12,1322);
+call adddata("Yash",33,987);
+call adddata("Kushal",35,0);
+call adddata("Aniket",3,990);
+call adddata("Ajit",1,882);
+
+5. Display
+select * from StudentMarks;
++--------+------------+
+| name   | totalMarks |
++--------+------------+
+| Ajit   |        882 |
+| Aniket |        990 |
+| Kushal |          0 |
+| Raj    |       1322 |
+| Vedant |       1340 |
+| Yash   |        987 |
++--------+------------+
+
+select * from Result;
++--------+--------+--------------+
+| rollNo | name   | class        |
++--------+--------+--------------+
+|     30 | Vedant | Distinction  |
+|     12 | Raj    | Distinction  |
+|     33 | Yash   | First Class  |
+|     35 | Kushal | Fail         |
+|      3 | Aniket | Distinction  |
+|      1 | Ajit   | Second Class |
++--------+--------+--------------+

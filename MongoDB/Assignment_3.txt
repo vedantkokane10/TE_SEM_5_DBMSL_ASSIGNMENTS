@@ -1,0 +1,105 @@
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+Map reduce funtions
+1. to calculate the average rating for each genre based on the existing data
+// Map function
+var mapFunction = function () {
+  emit(this.genre, this.rating);
+};
+
+// Reduce function
+var reduceFunction = function (key, values) {
+  var sum = Array.sum(values);
+  var avg = sum / values.length;
+  return avg;
+};
+
+db.movieReview.mapReduce(
+  mapFunction,
+  reduceFunction,
+  { out: "genre_average_ratings" }
+);
+
+// result
+db.genre_average_ratings.find();
+[
+  { _id: 'action', value: 8.55 },
+  { _id: 'drama', value: 9.5 },
+  { _id: 'horror', value: 8 }
+]
+
+2. Need to insert more documents. Include query criteria in Mapreduce second example
+db.movieReview.insertMany([
+  {
+    id: 6,
+    name: "Die Hard",
+    genre: "action",
+    rating: 9.3,
+    review: "Fantastic action film",
+    reviews: [{ user: 103, comment: "Amazing!", rating: 9 }]
+  },
+  {
+    id: 7,
+    name: "Mad Max: Fury Road",
+    genre: "action",
+    rating: 8.5,
+    review: "Intense action-packed movie",
+    reviews: [{ user: 105, comment: "Thrilling!", rating: 8 }]
+  }
+]);
+
+var mapFunctionWithQuery = function () {
+  if (this.genre === "action") {
+    emit("action", this.rating);
+  }
+};
+
+db.movieReview.mapReduce(
+  mapFunctionWithQuery,
+  reduceFunction,
+  { out: "action_movie_average_rating" }
+);
+
+// result
+db.action_movie_average_rating.find();
+>
+[ { _id: 'action', value: 8.55 } ]

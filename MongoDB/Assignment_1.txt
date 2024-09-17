@@ -1,0 +1,347 @@
+
+1. create collection movieReview
+
+2. db.movieReview.insertOne({
+	id : 1,
+	name : "Pathan",
+	genre : "action",
+	rating : 8.0
+  })
+
+3. db.movieReview.insertMany([
+	{
+	    id : 2,
+	    name : "Jawan",
+	    genre : "action",
+	    rating : 9.1
+    	},
+    	{
+    	    id : 3,
+    	    name : "Titanic",
+    	    genre : "drama",
+    	    rating : 9.5
+    	},
+    	{
+    	    id : 4,
+    	    name : "Tenet",
+    	    genre : "suspense",
+    	    rating : 7
+    	},
+    	{
+    	    id : 5,
+    	    name : "It",
+    	    genre : "horror",
+    	    rating : 8
+    	}
+])
+    	
+    	
+4.  Display of data
+db.movieReview.find({},{"_id":0})
+{ "id" : 1, "name" : "Pathan", "genre" : "action", "rating" : 8 }
+{ "id" : 2, "name" : "Jawan", "genre" : "action", "rating" : 9.1 }
+{ "id" : 3, "name" : "Titanic", "genre" : "drama", "rating" : 9.5 }
+{ "id" : 4, "name" : "Tenet", "genre" : "suspense", "rating" : 7 }
+{ "id" : 5, "name" : "It", "genre" : "horror", "rating" : 8 }
+
+
+5. Displaying only action movies
+db.movieReview.find({"genre" : "action"},{"_id":0})
+{ "id" : 1, "name" : "Pathan", "genre" : "action", "rating" : 8 }
+{ "id" : 2, "name" : "Jawan", "genre" : "action", "rating" : 9.1 }
+
+
+6. Operators 
+Comparison
+Find all movies with a rating greater than or equal to 9:
+db.movieReview.find({ rating: { $gte: 9 } }, {"_id":0});
+{ "id" : 2, "name" : "Jawan", "genre" : "action", "rating" : 9.1 }
+{ "id" : 3, "name" : "Titanic", "genre" : "drama", "rating" : 9.5 }
+
+Logical
+Find all movies with a rating of 9 or  genre drama:
+db.movieReview.find({ $or: [{ rating: 9 }, { "genre": "drama" }] }, {"_id":0} )
+{ "id" : 3, "name" : "Titanic", "genre" : "drama", "rating" : 9.5 }
+
+
+7. Multi and upsert option along with updateMany()
+db.movieReview.update({}, { $set: { review: "Great to watch" } }, { multi: true });
+db.movieReview.updateMany({ rating: 9 }, { $set: { review : "Great to watch" } });
+db.movieReview.updateMany({ rating: { $gte: 8, $lt: 9 } }, { $set: { review: "Satisfactory to watch" } });
+db.movieReview.updateMany({ rating: { $gte: 6, $lt: 8 } }, { $set: { review: "Average to watch" } });
+db.movieReview.updateMany({ rating: { $gte: 0, $lt: 6 } }, { $set: { review: "Bad to watch" } });
+db.movieReview.find({},{"_id":0})
+{ "id" : 1, "name" : "Pathan", "genre" : "action", "rating" : 8, "review" : "Satisfactory to watch" }
+{ "id" : 2, "name" : "Jawan", "genre" : "action", "rating" : 9.1, "review" : "Great to watch" }
+{ "id" : 3, "name" : "Titanic", "genre" : "drama", "rating" : 9.5, "review" : "Great to watch" }
+{ "id" : 4, "name" : "Tenet", "genre" : "suspense", "rating" : 7, "review" : "Average to watch" }
+{ "id" : 5, "name" : "It", "genre" : "horror", "rating" : 8, "review" : "Satisfactory to watch" }
+
+
+8. Array Insertion 
+db.movieReview.update({ name: "Pathan" }, {
+  $set: {
+    reviews: [
+      { userId: 101, comment: "Great movie!", rating: 9 },
+      { userId: 102, comment: "Enjoyed it!", rating: 8 }
+    ]
+  }
+})
+db.movieReview.update({name:"Titanic"},{ $set :{ reviews:[ {user:103, comment:"Bad movie",rating:5}]}})
+db.movieReview.update({name:"Pathan"},{ $set :{ reviews:[ {user:103, comment:"Bad movie",rating:7}]}})
+db.movieReview.update({name:"Jawan"},{ $set :{ reviews:[ {user:103, comment:"Average movie",rating:7}]}})
+db.movieReview.update({name:"Tenet"},{ $set :{ reviews:[ {user:104, comment:"Great movie",rating:9}]}})
+
+db.movieReview.find({},{_id:0})
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 103, comment: 'Bad movie', rating: 7 } ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Bad movie', rating: 5 } ]
+  },
+  {
+    id: 4,
+    name: 'Tenet',
+    genre: 'suspense',
+    rating: 7,
+    review: 'Average to watch',
+    reviews: [ { user: 104, comment: 'Great movie', rating: 9 } ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+9. Array Operations 
+1. $push (add)
+db.movieReview.update( { name: "Pathan" }, { $push: { reviews: { userId: 105, comment: "Good movie!", rating: 7 } } } )
+db.movieReview.update( { name: "Titanic" }, { $push: { reviews: { userId: 109, comment: "Good movie!", rating: 8 } } } )
+
+2. $pull (remove)
+db.movieReview.update(
+  { name: "Pathan" },
+  {
+    $pull: {
+      reviews: { userId: 103 }
+    }
+  }
+)
+ 
+db.movieReview.find({},{_id:0})
+>
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Tenet',
+    genre: 'suspense',
+    rating: 7,
+    review: 'Average to watch',
+    reviews: [ { user: 104, comment: 'Great movie', rating: 9 } ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+3. $addToSet
+db.movieReview.update(
+  { name: "Tenet" },
+  {
+    $addToSet: {
+      reviews: {
+        userId: 103,
+        comment: "Good movie!",
+        rating: 7
+      }
+    }
+  }
+)
+
+4. $ Unwind
+db.movieReview.aggregate([
+  { $match: { name: "Pathan" } },
+  { $unwind: "$reviews" }
+])
+
+ db.movieReview.aggregate([
+...   { $match: { name: "Pathan" } },
+...   { $unwind: "$reviews" }
+... ])
+[
+  {
+    _id: ObjectId("653ef4e8132766fe784507c5"),
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: { user: 103, comment: 'Bad movie', rating: 7 }
+  },
+  {
+    _id: ObjectId("653ef4e8132766fe784507c5"),
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: { userId: 105, comment: 'Good movie!', rating: 7 }
+  }
+]
+
+
+Movies> db.movieReview.find({},{_id:0})
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Tenet',
+    genre: 'suspense',
+    rating: 7,
+    review: 'Average to watch',
+    reviews: [
+      { user: 104, comment: 'Great movie', rating: 9 },
+      { userId: 103, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+
+10. Deletion of a record
+db.movieReview.deleteMany({ rating: { $lt: 8 } })
+// movie with id = 4 will be deleted
+db.movieReview.find({},{_id:0})
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]

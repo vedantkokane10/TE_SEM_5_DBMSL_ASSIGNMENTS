@@ -1,0 +1,73 @@
+// 31430 - Vedant Kokane
+
+package Program;
+import java.util.*;
+
+import org.bson.Document;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.*;
+
+public class Program {
+    public static void main(String[] args) {
+        try {
+        	MongoClient mongo = new MongoClient("localhost",27017);
+        	MongoDatabase db = mongo.getDatabase("Final");
+        	// db.createCollection("Employee");
+        	MongoCollection <Document> collection = db.getCollection("Employee");
+    
+        	String ch = "y";
+			Scanner in = new Scanner(System.in);
+			while(ch != "n") {
+				System.out.println("------------------------------------------");
+				System.out.println("1. Print");
+				System.out.println("2. Add");
+				System.out.println("3. Update");
+				System.out.println("4. Delete");
+				System.out.println("------------------------------------------");
+				int c = in.nextInt();
+				if(c == 1) {
+					FindIterable <Document> iterDoc = collection.find();
+					Iterator it = iterDoc.iterator();
+					while(it.hasNext()) {
+						System.out.println(it.next());
+					}
+				}
+				else if(c==2) {
+					System.out.println("Enter id and name of employee");
+					int id = in.nextInt();
+					in.nextLine();  // Consume the newline character left in the input buffer
+					String name = in.nextLine();
+					Document doc = new Document("id",Integer.toString(id));
+					doc.append("name", name);
+					collection.insertOne(doc);
+				}
+				else if(c==3) {
+					System.out.println("Enter id of employee");
+					int id = in.nextInt();
+					in.nextLine(); 
+					System.out.println("Enter new name of employee");
+					String name = in.nextLine();
+					collection.updateOne(Filters.eq("id",Integer.toString(id)), Updates.set("name", name));
+					
+				}
+				else if(c==4) {
+					System.out.println("Enter id of employee");
+					int id = in.nextInt();
+					collection.deleteOne(Filters.eq("id",Integer.toString(id)));
+				}
+				
+				System.out.println("Do you want to continue (y/n) - ");
+				ch = in.nextLine();
+			}
+        }
+        catch (Exception e) {
+			// TODO: handle exception
+        	System.out.println(e);
+		}
+    }
+}

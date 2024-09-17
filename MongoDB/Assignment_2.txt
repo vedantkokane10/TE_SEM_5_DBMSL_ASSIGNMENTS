@@ -1,0 +1,198 @@
+[
+  {
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+
+
+
+
+1.  Include three types of indexing(Single_key,Compound_Key,Unique)
+db.movieReview.createIndex({name:1})
+db.movieReview.createIndex({ genre: 1, rating: 1 })
+db.movieReview.createIndex({ id: 1 }, { unique: true })
+
+2. Aggregate Functions
+1) $match
+db.movieReview.aggregate([{ $match: { genre: "action", rating: { $gte: 8 } } }])
+>
+[
+  {
+    _id: ObjectId("653ef4e8132766fe784507c5"),
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    _id: ObjectId("653ef4f6132766fe784507c6"),
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  }
+]
+
+2) $group
+db.movieReview.aggregate([{ $group: { _id: "$genre", averageRating: { $avg: "$rating" } } }])
+[
+  { _id: 'drama', averageRating: 9.5 },
+  { _id: 'horror', averageRating: 8 },
+  { _id: 'action', averageRating: 8.55 }
+]
+
+3) $project 
+db.movieReview.aggregate([
+  { $match: { genre: "action", rating: { $gt: 9 } } },
+  { $project: { _id: 0, name: 1, rating: 1 } }
+])
+[ { name: 'Jawan', rating: 9.1 } ]
+
+4) $sort
+db.movieReview.aggregate([ { $sort: { rating: -1 } },{ $limit: 5 }])
+>
+[
+  {
+    _id: ObjectId("653ef4f6132766fe784507c7"),
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+Movies> db.movieReview.aggregate([ { $sort: { rating: -1 } },{ $limit: 5 }])
+[
+  {
+    _id: ObjectId("653ef4f6132766fe784507c7"),
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  },
+  {
+    _id: ObjectId("653ef4f6132766fe784507c6"),
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    _id: ObjectId("653ef4e8132766fe784507c5"),
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    _id: ObjectId("653ef4f6132766fe784507c9"),
+    id: 5,
+    name: 'It',
+    genre: 'horror',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [ { user: 105, comment: 'Good movie', rating: 8.7 } ]
+  }
+]
+
+5.$limit 
+db.movieReview.aggregate([{ $limit: 3 }])
+[
+  {
+    _id: ObjectId("653ef4e8132766fe784507c5"),
+    id: 1,
+    name: 'Pathan',
+    genre: 'action',
+    rating: 8,
+    review: 'Satisfactory to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 7 },
+      { userId: 105, comment: 'Good movie!', rating: 7 }
+    ]
+  },
+  {
+    _id: ObjectId("653ef4f6132766fe784507c6"),
+    id: 2,
+    name: 'Jawan',
+    genre: 'action',
+    rating: 9.1,
+    review: 'Great to watch',
+    reviews: [ { user: 103, comment: 'Average movie', rating: 7 } ]
+  },
+  {
+    _id: ObjectId("653ef4f6132766fe784507c7"),
+    id: 3,
+    name: 'Titanic',
+    genre: 'drama',
+    rating: 9.5,
+    review: 'Great to watch',
+    reviews: [
+      { user: 103, comment: 'Bad movie', rating: 5 },
+      { userId: 109, comment: 'Good movie!', rating: 8 }
+    ]
+  }
+]
+
+
+3. Pipeline
+1. count
+db.movieReview.aggregate([{ $match: { genre: "action" } },{ $count: "actionMoviesCount" }])
+>
+[ { actionMoviesCount: 2 } ]
+
+2. distinct
+db.movieReview.aggregate([ { $group: { _id: "$genre" } }])
+>
+[ { _id: 'action' }, { _id: 'drama' }, { _id: 'horror' } ]

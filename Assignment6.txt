@@ -1,0 +1,75 @@
+1. Creating Tables
+create table OldEmployee(id int, name varchar(20), primary key(id));
+create table NewEmployee(id int, name varchar(20));
+
+2. Insertion of data in tables
+// old table
+insert into OldEmployee values(12,"Raj");
+insert into OldEmployee values(11,"Rakesh");
+// New table
+insert into NewEmployee values(18,"Yash");
+insert into NewEmployee values(12,"Soham");
+
+3. Printing of data
+select * from OldEmployee;
++----+--------+
+| id | name   |
++----+--------+
+| 11 | Rakesh |
+| 12 | Raj    |
++----+--------+
+
+select * from NewEmployee;
++------+-------+
+| id   | name  |
++------+-------+
+|   18 | Yash  |
+|   12 | Soham |
++------+-------+
+
+4. Creating procedure in which I will use cursor
+DELIMITER //
+CREATE PROCEDURE MergeTable2()
+BEGIN
+    DECLARE oldid INT;
+    DECLARE oldname VARCHAR(20);
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    DECLARE c1 CURSOR FOR SELECT id, name FROM OldEmployee;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN c1;
+    FETCH c1 INTO oldid, oldname;
+    
+    WHILE NOT done DO
+        IF NOT EXISTS (SELECT * FROM NewEmployee WHERE id = oldid) THEN
+            INSERT INTO NewEmployee VALUES (oldid, oldname);
+        END IF;
+        
+        FETCH c1 INTO oldid, oldname;
+    END WHILE;
+    
+    CLOSE c1;
+END;
+//
+DELIMITER ;
+
+5. Calling the Merge table procedure
+call MergeTable2();
+
+6. Printing of data
+select * from OldEmployee;
++----+--------+
+| id | name   |
++----+--------+
+| 11 | Rakesh |
+| 12 | Raj    |
++----+--------+
+
+select * from NewEmployee;
++------+--------+
+| id   | name   |
++------+--------+
+|   18 | Yash   |
+|   12 | Soham  |
+|   11 | Rakesh |
++------+--------+

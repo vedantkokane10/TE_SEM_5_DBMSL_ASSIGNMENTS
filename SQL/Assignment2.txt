@@ -1,0 +1,216 @@
+Consider the following relational Schema.
+● Student( s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob)
+● PlacementDrive( Drive_id,Pcompany_name,package,location)
+● Training ( T_id,Tcompany_name,T_Fee,T_year)
+Note: Use referential integrity constraints while creating tables with on delete cascade
+options.
+
+1. Creating Tables
+PlacementDrive = 
+create table PlacementDrive( 
+driveID varchar(20), 
+companyName varchar(30),
+ package int, 
+location varchar(20), 
+primary key(driveID));
+
+Training = 
+create table Training(
+trainingID varchar(20),
+trainingCompany varchar(30),
+trainingFee int,
+trainingYear year,
+primary key (trainingID));
+
+Student = 
+create table Student( 
+studentID varchar(20), 
+driveID varchar(20),
+trainingID varchar(20),
+studentName varchar(30), 
+cgpa float, 
+studentBranch varchar(20), 
+studentDOB date,
+foreign key (driveID) references PlacementDrive(driveID) on delete cascade, 
+foreign key (trainingID) references Training(trainingID) on delete cascade);
+
+2. Insertion of Data
+Insertion of data in PlacementDrive Table = 
+insert into PlacementDrive values('D1','microsoft',100000,'delhi');
+insert into PlacementDrive values('D2','google',120000,'pune');
+insert into PlacementDrive values('D3','netflix',113000,'pune');
+insert into PlacementDrive values('D4','directi',234000,'mumbai');
+
+Insertion of data in Training Table = 
+insert into Training values('T1','aspireminds',8000,2014);
+insert into Training values('T2','aspireminds',8000,2015);
+insert into Training values('T3','infotech',7000,2019);
+insert into Training values('T4','infostar',7000,2018);
+insert into Training values('T5','interminds',5000,2021);
+
+Insertion of data in Student Table = 
+insert into Student values('T03','D1','T2','yash',9.1,'comp','1999/02/12');
+insert into Student values('T15','D4','T5','vedant',5.1,'comp','1998/12/13');
+insert into Student values('T01','D1','T2','raj',8.3,'comp','1999/02/12');
+insert into Student values('T06','D3','T3','atharva',8.1,'it','1996/11/3');
+insert into Student values('T09','D4','T4','ram',6.7,'it','1998/10/13');
+insert into Student values('T11','D2','T1','rakesh',8.2,'it','1998/10/1');
+insert into Student values('T13','D2','T3','kunal',7.5,'comp','1998/10/11');
+insert into Student values('T19','D3','T1','karan',7.9,'entc','1999/02/11');
+insert into Student values('T20','D4','T4','rohit',9.3,'comp','1998/03/11');
+insert into Student values('T04','D2','T1','aryan',8.2,'it','1997/07/14');
+insert into Student values('T04','D2','T1','jayesh',8.2,'entc','1997/07/14');
+insert into Student values('T04','D2','T1','ganesh',6.4,'entc','1997/11/14');
+
+
+3. Display of all the tables = 
+
+select * from Student;
++-----------+---------+------------+-------------+------+---------------+------------+
+| studentID | driveID | trainingID | studentName | cgpa | studentBranch | studentDOB |
++-----------+---------+------------+-------------+------+---------------+------------+
+| T03       | D1      | T2         | yash        |  9.1 | comp          | 1999-02-12 |
+| T01       | D1      | T2         | raj         |  8.3 | comp          | 1999-02-12 |
+| T06       | D3      | T3         | atharva     |  8.1 | it            | 1996-11-03 |
+| T11       | D2      | T1         | rakesh      |  8.2 | it            | 1998-10-01 |
+| T13       | D2      | T3         | kunal       |  7.5 | comp          | 1998-10-11 |
+| T19       | D3      | T1         | karan       |  7.9 | entc          | 1999-02-11 |
+| T20       | D4      | T4         | rohit       |  9.3 | comp          | 1998-03-11 |
+| T04       | D2      | T1         | aryan       |  8.2 | it            | 1997-07-14 |
+| T04       | D2      | T1         | jayesh      |  8.2 | entc          | 1997-07-14 |
++-----------+---------+------------+-------------+------+---------------+------------+
+
+ select * from PlacementDrive;
++---------+-------------+---------+----------+
+| driveID | companyName | package | location |
++---------+-------------+---------+----------+
+| D1      | microsoft   |  100000 | delhi    |
+| D2      | google      |  120000 | pune     |
+| D3      | netflix     |  113000 | pune     |
+| D4      | directi     |  234000 | mumbai   |
++---------+-------------+---------+----------+
+
+ select * from Training;
++------------+-----------------+-------------+--------------+
+| trainingID | trainingCompany | trainingFee | trainingYear |
++------------+-----------------+-------------+--------------+
+| T1         | aspireminds     |        8000 |         2014 |
+| T2         | aspireminds     |        8000 |         2015 |
+| T3         | infotech        |        8000 |         2019 |
+| T4         | infostar        |        7000 |         2018 |
+| T5         | interminds      |        5000 |         2021 |
++------------+-----------------+-------------+--------------+
+
+4. Questions
+
+1.Insert at least 10 records in the Student table and insert other tables accordingly.
+Already done in step 2
+
+2.Display all students details with branch ‘Computer ‘and ‘It’ and student name
+starting with a or d ?
+select * from Student where studentBranch in ("comp","it") and studentName like '%a' or studentName like '%d';
++-----------+---------+------------+-------------+------+---------------+------------+
+| studentID | driveID | trainingID | studentName | cgpa | studentBranch | studentDOB |
++-----------+---------+------------+-------------+------+---------------+------------+
+| T06       | D3      | T3         | atharva     |  8.1 | it            | 1996-11-03 |
++-----------+---------+------------+-------------+------+---------------+------------+
+
+3. list the number of different companies.(use of distinct)
+select count(distinct companyName) from PlacementDrive;
++-----------------------------+
+| count(distinct companyName) |
++-----------------------------+
+|                           4 |
++-----------------------------+
+
+4. Give 15% increase in fee of the Training whose joining year is 2019.
+update Training
+set trainingFee = trainingFee  + trainingFee * 0.15
+where trainingYear = 2019;
+select * from Training;
++------------+-----------------+-------------+--------------+
+| trainingID | trainingCompany | trainingFee | trainingYear |
++------------+-----------------+-------------+--------------+
+| T1         | aspireminds     |        8000 |         2014 |
+| T2         | aspireminds     |        8000 |         2015 |
+| T3         | infotech        |        8050 |         2019 |
+| T4         | infostar        |        7000 |         2018 |
+| T5         | interminds      |        5000 |         2021 |
++------------+-----------------+-------------+--------------+
+// earlier T3 had 8000 trainingFee now it is incremented by 15% so 8050
+
+5.Delete Student details having CGPA score less than 7.
+delete from Student where cgpa < 7;
+
+6.Find the names of companies belonging to pune or Mumbai
+select companyName from PlacementDrive where location in ("mumbai","pune");
++-------------+
+| companyName |
++-------------+
+| google      |
+| netflix     |
+| directi     |
++-------------+
+
+7.Find the student name who joined training in 1-1-2019 as well as in 1-1-2021
+select Student.studentName, Training.trainingYear from Student natural join Training where Training.trainingYear = 2019 or Training.trainingYear = 2021;
++-------------+--------------+
+| studentName | trainingYear |
++-------------+--------------+
+| atharva     |         2019 |
+| kunal       |         2019 |
++-------------+--------------+
+
+8. Find the student name having maximum CGPA score and names of student having CGPA score between 7 to 9 .
+select max(cgpa) from Student;
++-----------+
+| max(cgpa) |
++-----------+
+|       9.3 |
++-----------+
+
+select studentName,cgpa from Student where cgpa > 7 or cgpa <9;
++-------------+------+
+| studentName | cgpa |
++-------------+------+
+| yash        |  9.1 |
+| raj         |  8.3 |
+| atharva     |  8.1 |
+| rakesh      |  8.2 |
+| kunal       |  7.5 |
+| karan       |  7.9 |
+| rohit       |  9.3 |
+| aryan       |  8.2 |
+| jayesh      |  8.2 |
++-------------+------+
+
+9. Display all Student name with T_id with decreasing order of Fees
+select Student.studentName,Training.trainingID,Training.trainingFee from Student natural join Training order by Training.trainingFee DESC;
++-------------+------------+-------------+
+| studentName | trainingID | trainingFee |
++-------------+------------+-------------+
+| atharva     | T3         |        8050 |
+| kunal       | T3         |        8050 |
+| yash        | T2         |        8000 |
+| raj         | T2         |        8000 |
+| rakesh      | T1         |        8000 |
+| karan       | T1         |        8000 |
+| aryan       | T1         |        8000 |
+| jayesh      | T1         |        8000 |
+| rohit       | T4         |        7000 |
++-------------+------------+-------------+
+
+10. Display PCompany name, S_name ,location and Package with Package 30K,
+select Student.studentName,PlacementDrive.companyName,PlacementDrive.location,PlacementDrive.package from Student natural join PlacementDrive where PlacementDrive.package > 100000;
++-------------+-------------+----------+---------+
+| studentName | companyName | location | package |
++-------------+-------------+----------+---------+
+| rakesh      | google      | pune     |  120000 |
+| kunal       | google      | pune     |  120000 |
+| aryan       | google      | pune     |  120000 |
+| jayesh      | google      | pune     |  120000 |
+| atharva     | netflix     | pune     |  113000 |
+| karan       | netflix     | pune     |  113000 |
+| rohit       | directi     | mumbai   |  234000 |
++-------------+-------------+----------+---------+
+// here I have'nt entered any records for 30k, 40k , 50k. So I tested the against 100000 (100K) condition.
